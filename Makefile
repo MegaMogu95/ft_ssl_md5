@@ -1,7 +1,7 @@
 NAME		= ft_ssl
 
 CC			= cc
-CFLAGS		= -Wall -Wextra -Werror
+CFLAGS		= -Wall -Wextra -Werror -g
 INCLUDES	= -Iincludes
 
 SRCDIR		= srcs
