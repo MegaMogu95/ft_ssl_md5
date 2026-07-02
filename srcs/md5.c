@@ -26,7 +26,7 @@ static const int	s[64] = {
 	6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
 };
 
-void	write_lend(unsigned char *data, uint64_t n, size_t	len)
+static void	write_lend(unsigned char *data, uint64_t n, size_t	len)
 {
 	for (size_t i = 0; i < len; i++)
 	{
@@ -35,7 +35,7 @@ void	write_lend(unsigned char *data, uint64_t n, size_t	len)
 	}
 }
 
-uint64_t	read_lend(const unsigned char *data, size_t len)
+static uint64_t	read_lend(const unsigned char *data, size_t len)
 {
 	uint64_t	ret;
 
@@ -55,7 +55,7 @@ static size_t	get_padded_len(size_t len)
 	return (new_len);
 }
 
-int	md5_padding(const unsigned char *data, size_t len, unsigned char **pad_data)
+static int	md5_padding(const unsigned char *data, size_t len, unsigned char **pad_data)
 {
 	size_t			new_len;
 	unsigned char	*pad_data_str;
@@ -89,18 +89,10 @@ static void	get_split_chunk(uint32_t chunk[16], const unsigned char *data)
 	}
 }
 
-uint32_t	lrot(uint32_t n, int s)
+static uint32_t	lrot(uint32_t n, int s)
 {
 	return (n << s | n >> (32 - s));
 }
-
-// void	add_digest(unsigned char *digest, uint32_t a)
-// {
-// 	write_lend(digest, a0, 4);
-// 	write_lend(digest + 4, b0, 4);
-// 	write_lend(digest + 8, c0, 4);
-// 	write_lend(digest + 12, d0, 4);
-// }
 
 void	md5_hash(const unsigned char *data, size_t len, unsigned char *digest)
 {

@@ -8,9 +8,6 @@
 # include <string.h>
 # include <stdint.h>
 
-/*
-** Digest lengths (in bytes) for the supported algorithms.
-*/
 # define MD5_DIGEST_LENGTH 16
 # define SHA256_DIGEST_LENGTH 32
 # define MAX_DIGEST_LENGTH 64
@@ -23,14 +20,11 @@
 **   -r : reverse the format of the output
 **   -s : print the sum of the given string
 */
-# define FLAG_P (1 << 0)
-# define FLAG_Q (1 << 1)
-# define FLAG_R (1 << 2)
-# define FLAG_S (1 << 3)
+# define FLAG_P 1
+# define FLAG_Q 2
+# define FLAG_R 4
+# define FLAG_S 8
 
-/*
-** Where the data to hash comes from.
-*/
 typedef enum e_src
 {
 	SRC_STDIN,
@@ -38,15 +32,6 @@ typedef enum e_src
 	SRC_FILE
 }	t_src;
 
-/*
-** One thing to hash: a string given with -s, a file, or STDIN.
-**   label : for SRC_FILE the path, for SRC_STRING the string (both alias argv);
-**           for SRC_STDIN unused.
-**   data  : raw bytes fed to the hash function.
-**   len   : number of bytes in `data`.
-** `label`/`data` ownership: file `data` is malloc'd and freed; string `data`
-** aliases `label` (argv) and is never freed.
-*/
 typedef struct s_input
 {
 	t_src			type;
@@ -56,14 +41,6 @@ typedef struct s_input
 	struct s_input	*next;
 }	t_input;
 
-/*
-** Descriptor for a hashing algorithm. Dispatch is done through the `hash`
-** function pointer, so adding an algorithm never touches the command logic.
-**   cmd        : name typed on the command line ("md5").
-**   name       : label used when printing ("MD5").
-**   digest_len : size of the produced digest, in bytes.
-**   hash       : fills `digest` with `digest_len` bytes for `data`/`len`.
-*/
 typedef struct s_algo
 {
 	const char	*cmd;

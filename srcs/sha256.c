@@ -19,7 +19,7 @@ static const uint32_t	K[64] = {
 	0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
-void	write_bend(unsigned char *data, uint64_t n, size_t	len)
+static void	write_bend(unsigned char *data, uint64_t n, size_t	len)
 {
 	for (size_t i = 0; i < len; i++)
 	{
@@ -28,7 +28,7 @@ void	write_bend(unsigned char *data, uint64_t n, size_t	len)
 	}
 }
 
-uint64_t	read_bend(const unsigned char *data, size_t len)
+static uint64_t	read_bend(const unsigned char *data, size_t len)
 {
 	uint64_t	ret;
 
@@ -51,7 +51,7 @@ static size_t	get_padded_len(size_t len)
 	return (new_len);
 }
 
-int	sha256_padding(const unsigned char *data, size_t len, unsigned char **pad_data)
+static int	sha256_padding(const unsigned char *data, size_t len, unsigned char **pad_data)
 {
 	size_t			new_len;
 	unsigned char	*pad_data_str;
@@ -85,7 +85,7 @@ static void	get_split_chunk(uint32_t chunk[16], const unsigned char *data)
 	}
 }
 
-uint32_t	rrot(uint32_t n, int s)
+static uint32_t	rrot(uint32_t n, int s)
 {
 	return (n >> s | n << (32 - s));
 }
