@@ -41,7 +41,7 @@ uint64_t	read_lend(const unsigned char *data, size_t len)
 
 	ret = 0;
 	for (size_t i = 0; i < len; i++)
-		ret += data[i] << (i * 8);
+		ret += (uint64_t)data[i] << (i * 8);
 	return (ret);
 }
 
@@ -76,7 +76,7 @@ int	md5_padding(const unsigned char *data, size_t len, unsigned char **pad_data)
 	ft_memset(pad_data_str, 0, new_len - (len + 1 + 8));
 	pad_data_str += new_len - (len + 1 + 8);
 
-	write_lend(pad_data_str, len, 8);
+	write_lend(pad_data_str, (uint64_t)len * 8, 8);
 	return (0);
 }
 
@@ -151,6 +151,7 @@ void	md5_hash(const unsigned char *data, size_t len, unsigned char *digest)
 		b0 += b;
 		c0 += c;
 		d0 += d;
+		pad_data += CHUNK_SIZE;
 	}
 	write_lend(digest, a0, 4);
 	write_lend(digest + 4, b0, 4);
