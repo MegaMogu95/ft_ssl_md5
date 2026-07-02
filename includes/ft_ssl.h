@@ -6,6 +6,7 @@
 # include <fcntl.h>
 # include <errno.h>
 # include <string.h>
+# include <stdint.h>
 
 /*
 ** Digest lengths (in bytes) for the supported algorithms.
@@ -13,6 +14,7 @@
 # define MD5_DIGEST_LENGTH 16
 # define SHA256_DIGEST_LENGTH 32
 # define MAX_DIGEST_LENGTH 64
+# define CHUNK_SIZE 64
 
 /*
 ** Command line flag bits.
