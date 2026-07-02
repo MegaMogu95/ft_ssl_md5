@@ -45,7 +45,7 @@ uint64_t	read_lend(const unsigned char *data, size_t len)
 	return (ret);
 }
 
-size_t	get_padded_len(size_t len)
+static size_t	get_padded_len(size_t len)
 {
 	size_t	new_len;
 
@@ -80,7 +80,7 @@ int	md5_padding(const unsigned char *data, size_t len, unsigned char **pad_data)
 	return (0);
 }
 
-void	get_split_chunk(uint32_t	chunk[16], const unsigned char *data)
+static void	get_split_chunk(uint32_t chunk[16], const unsigned char *data)
 {
 	for (size_t i = 0; i < 16; i++)
 	{
@@ -89,72 +89,72 @@ void	get_split_chunk(uint32_t	chunk[16], const unsigned char *data)
 	}
 }
 
-uint32_t	left_rotate(uint32_t n, int s)
+uint32_t	lrot(uint32_t n, int s)
 {
 	return (n << s | n >> (32 - s));
 }
+
+// void	add_digest(unsigned char *digest, uint32_t a)
+// {
+// 	write_lend(digest, a0, 4);
+// 	write_lend(digest + 4, b0, 4);
+// 	write_lend(digest + 8, c0, 4);
+// 	write_lend(digest + 12, d0, 4);
+// }
 
 void	md5_hash(const unsigned char *data, size_t len, unsigned char *digest)
 {
 	unsigned char	*pad_data;
 	uint32_t		schunk[CHUNK_SIZE / sizeof(uint32_t)];
 	size_t			n_chunks;
-	uint32_t		a0 = 0x67452301;
-	uint32_t		b0 = 0xefcdab89;
-	uint32_t		c0 = 0x98badcfe;
-	uint32_t		d0 = 0x10325476;
-	uint32_t		a;
-	uint32_t		b;
-	uint32_t		c;
-	uint32_t		d;
+	uint32_t		a[4] = {0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476};
+	uint32_t		tmp[4];
 	uint32_t		f;
 	int				g;
 
 	md5_padding(data, len, &pad_data);
 	n_chunks = get_padded_len(len) / CHUNK_SIZE;
-	while (n_chunks--)
+	for (size_t i = 0; i < n_chunks; i++)
 	{
-		get_split_chunk(schunk, pad_data);
-		a = a0;
-		b = b0;
-		c = c0;
-		d = d0;
+		get_split_chunk(schunk, pad_data + i * CHUNK_SIZE);
+		ft_memcpy(tmp, a, sizeof(uint32_t) * 4);
 		for (int i = 0; i < 64; i++)
 		{
 			if (i < 16)
 			{
-				f = (b & c) | (~b & d);
+				f = (tmp[1] & tmp[2]) | (~tmp[1] & tmp[3]);
 				g = i;
 			}
 			else if (i < 32)
 			{
-				f = (d & b) | ( ~d & c);
+				f = (tmp[3] & tmp[1]) | ( ~tmp[3] & tmp[2]);
 				g = (5 * i + 1) % 16;
 			}
 			else if (i < 48)
 			{
-				f = b ^ c ^ d;
+				f = tmp[1] ^ tmp[2] ^ tmp[3];
 				g = (3 * i + 5) % 16;
 			}
 			else
 			{
-				f = c ^ (b | ~d);
+				f = tmp[2] ^ (tmp[1] | ~tmp[3]);
 				g = 7 * i % 16;
 			}
-			f += a + K[i] + schunk[g];
-			a = d;
-			d = c;
-			c = b;
-			b += left_rotate(f, s[i]);
+			f += tmp[0] + K[i] + schunk[g];
+			tmp[0] = tmp[3];
+			tmp[3] = tmp[2];
+			tmp[2] = tmp[1];
+			tmp[1] += lrot(f, s[i]);
 		}
-		a0 += a;
-		b0 += b;
-		c0 += c;
-		d0 += d;
-		pad_data += CHUNK_SIZE;
+		a[0] += tmp[0];
+		a[1] += tmp[1];
+		a[2] += tmp[2];
+		a[3] += tmp[3];
 	}
-	write_lend(digest, a0, 4);
-	write_lend(digest + 4, b0, 4);
-	write_lend(digest + 8, c0, 4);
-	write_lend(digest + 12, d0, 4);
+	for (int i = 0; i < 4; i++)
+	{
+		write_lend(digest, a[i], 4);
+		digest += 4;
+	}
+	free(pad_data);
 }
