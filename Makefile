@@ -10,7 +10,7 @@ OBJDIR		= objs
 SRC			= main.c \
 			  dispatch.c \
 			  parse.c \
-			  input.c \
+			  read_file.c \
 			  run.c \
 			  print.c \
 			  utils.c \

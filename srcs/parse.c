@@ -1,9 +1,5 @@
 #include "ft_ssl.h"
 
-/*
-** Append a new input (string or file) to the tail of the list so that the
-** processing order matches the command-line order.
-*/
 t_input	*append_input(t_ssl *ssl, t_src type, char *label)
 {
 	t_input	*node;
@@ -42,11 +38,6 @@ void	free_inputs(t_ssl *ssl)
 	ssl->inputs_tail = NULL;
 }
 
-/*
-** Consume the argument of a -s flag: either the rest of the current token
-** (e.g. -sfoo) or the following argv element (e.g. -s foo). Returns the index
-** of the last argv element consumed.
-*/
 static int	take_string_arg(t_ssl *ssl, int i, int argc, char **argv)
 {
 	char	*token;
@@ -72,10 +63,6 @@ static int	take_string_arg(t_ssl *ssl, int i, int argc, char **argv)
 	return (i);
 }
 
-/*
-** Parse one option token (e.g. "-pqr" or "-s"). Returns the index of the last
-** argv element consumed (may advance past a -s argument).
-*/
 static int	parse_flags(t_ssl *ssl, int i, int argc, char **argv)
 {
 	char	*token;
@@ -107,11 +94,6 @@ static int	parse_flags(t_ssl *ssl, int i, int argc, char **argv)
 	return (i);
 }
 
-/*
-** Flags are only recognised until the first operand (file/string) is seen;
-** everything after it is treated as a file name -- matching OpenSSL's behavior
-** where e.g. "md5 file -s" opens a file literally named "-s".
-*/
 void	parse_args(t_ssl *ssl, int argc, char **argv)
 {
 	int	i;
