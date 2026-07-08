@@ -1,10 +1,10 @@
-#include "ft_ssl.h"
+#include "digest.h"
 
 /*
 ** Append a new input (string or file) to the tail of the list so that the
 ** processing order matches the command-line order.
 */
-t_input	*append_input(t_ssl *ssl, t_src type, char *label)
+t_input	*append_input(t_digest_ctx *ctx, t_src type, char *label)
 {
 	t_input	*node;
 
@@ -16,20 +16,20 @@ t_input	*append_input(t_ssl *ssl, t_src type, char *label)
 	node->data = NULL;
 	node->len = 0;
 	node->next = NULL;
-	if (ssl->inputs_tail)
-		ssl->inputs_tail->next = node;
+	if (ctx->inputs_tail)
+		ctx->inputs_tail->next = node;
 	else
-		ssl->inputs = node;
-	ssl->inputs_tail = node;
+		ctx->inputs = node;
+	ctx->inputs_tail = node;
 	return (node);
 }
 
-void	free_inputs(t_ssl *ssl)
+void	free_inputs(t_digest_ctx *ctx)
 {
 	t_input	*node;
 	t_input	*next;
 
-	node = ssl->inputs;
+	node = ctx->inputs;
 	while (node)
 	{
 		next = node->next;
@@ -38,8 +38,8 @@ void	free_inputs(t_ssl *ssl)
 		free(node);
 		node = next;
 	}
-	ssl->inputs = NULL;
-	ssl->inputs_tail = NULL;
+	ctx->inputs = NULL;
+	ctx->inputs_tail = NULL;
 }
 
 /*
@@ -47,7 +47,7 @@ void	free_inputs(t_ssl *ssl)
 ** (e.g. -sfoo) or the following argv element (e.g. -s foo). Returns the index
 ** of the last argv element consumed.
 */
-static int	take_string_arg(t_ssl *ssl, int i, int argc, char **argv)
+static int	take_string_arg(t_digest_ctx *ctx, int i, int argc, char **argv)
 {
 	char	*token;
 	int		pos;
@@ -58,16 +58,16 @@ static int	take_string_arg(t_ssl *ssl, int i, int argc, char **argv)
 		pos++;
 	if (token[pos + 1])
 	{
-		append_input(ssl, SRC_STRING, &token[pos + 1]);
+		append_input(ctx, SRC_STRING, &token[pos + 1]);
 		return (i);
 	}
 	if (i + 1 < argc)
 	{
-		append_input(ssl, SRC_STRING, argv[i + 1]);
+		append_input(ctx, SRC_STRING, argv[i + 1]);
 		return (i + 1);
 	}
 	ft_putstr_fd("ft_ssl: ", 2);
-	ft_putstr_fd(ssl->algo->cmd, 2);
+	ft_putstr_fd(ctx->digest->cmd, 2);
 	ft_putstr_fd(": option requires an argument -- 's'\n", 2);
 	return (i);
 }
@@ -76,7 +76,7 @@ static int	take_string_arg(t_ssl *ssl, int i, int argc, char **argv)
 ** Parse one option token (e.g. "-pqr" or "-s"). Returns the index of the last
 ** argv element consumed (may advance past a -s argument).
 */
-static int	parse_flags(t_ssl *ssl, int i, int argc, char **argv)
+static int	parse_flags(t_digest_ctx *ctx, int i, int argc, char **argv)
 {
 	char	*token;
 	int		j;
@@ -86,20 +86,20 @@ static int	parse_flags(t_ssl *ssl, int i, int argc, char **argv)
 	while (token[j])
 	{
 		if (token[j] == 'p')
-			ssl->flags |= FLAG_P;
+			ctx->flags |= FLAG_P;
 		else if (token[j] == 'q')
-			ssl->flags |= FLAG_Q;
+			ctx->flags |= FLAG_Q;
 		else if (token[j] == 'r')
-			ssl->flags |= FLAG_R;
+			ctx->flags |= FLAG_R;
 		else if (token[j] == 's')
 		{
-			ssl->flags |= FLAG_S;
-			return (take_string_arg(ssl, i, argc, argv));
+			ctx->flags |= FLAG_S;
+			return (take_string_arg(ctx, i, argc, argv));
 		}
 		else
 		{
 			ft_putstr_fd("ft_ssl: ", 2);
-			ft_putstr_fd(ssl->algo->cmd, 2);
+			ft_putstr_fd(ctx->digest->cmd, 2);
 			ft_putstr_fd(": illegal option\n", 2);
 		}
 		j++;
@@ -112,7 +112,7 @@ static int	parse_flags(t_ssl *ssl, int i, int argc, char **argv)
 ** everything after it is treated as a file name -- matching OpenSSL's behavior
 ** where e.g. "md5 file -s" opens a file literally named "-s".
 */
-void	parse_args(t_ssl *ssl, int argc, char **argv)
+void	parse_args(t_digest_ctx *ctx, int argc, char **argv)
 {
 	int	i;
 	int	opts_done;
@@ -122,11 +122,11 @@ void	parse_args(t_ssl *ssl, int argc, char **argv)
 	while (i < argc)
 	{
 		if (!opts_done && argv[i][0] == '-' && argv[i][1] != '\0')
-			i = parse_flags(ssl, i, argc, argv);
+			i = parse_flags(ctx, i, argc, argv);
 		else
 		{
 			opts_done = 1;
-			append_input(ssl, SRC_FILE, argv[i]);
+			append_input(ctx, SRC_FILE, argv[i]);
 		}
 		i++;
 	}

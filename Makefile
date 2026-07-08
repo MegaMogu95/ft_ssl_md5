@@ -9,13 +9,17 @@ OBJDIR		= objs
 
 SRC			= main.c \
 			  dispatch.c \
-			  parse.c \
-			  input.c \
-			  run.c \
-			  print.c \
 			  utils.c \
-			  md5.c \
-			  sha256.c
+			  digest/run_digest.c \
+			  digest/parse_digest.c \
+			  digest/input.c \
+			  digest/print.c \
+			  digest/md5.c \
+			  digest/sha256.c \
+			  cipher/run_cipher.c \
+			  cipher/base64.c \
+			  cipher/des_ecb.c \
+			  cipher/des_cbc.c
 
 OBJ			= $(addprefix $(OBJDIR)/, $(SRC:.c=.o))
 
@@ -25,7 +29,7 @@ $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
-	@mkdir -p $(OBJDIR)
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
