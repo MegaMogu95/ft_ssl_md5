@@ -2,10 +2,6 @@
 
 # define READ_CHUNK 4096
 
-/*
-** Grow the accumulation buffer to hold at least `needed` bytes. Uses only
-** malloc/free (no realloc): allocate a bigger block, copy, free the old one.
-*/
 static unsigned char	*grow(unsigned char *buf, size_t *cap, size_t needed)
 {
 	unsigned char	*bigger;
@@ -23,10 +19,6 @@ static unsigned char	*grow(unsigned char *buf, size_t *cap, size_t needed)
 	return (bigger);
 }
 
-/*
-** Read the whole content of `fd` into a freshly allocated buffer.
-** Returns 0 on success (caller frees *out), -1 on error (errno set by read).
-*/
 int	read_fd(int fd, unsigned char **out, size_t *outlen)
 {
 	unsigned char	tmp[READ_CHUNK];
@@ -61,10 +53,6 @@ int	read_fd(int fd, unsigned char **out, size_t *outlen)
 	return (0);
 }
 
-/*
-** Open a file and read its full content. Returns 0 on success, -1 on error
-** (errno preserved for the caller's error message).
-*/
 int	read_file(const char *path, unsigned char **out, size_t *outlen)
 {
 	int	fd;

@@ -12,7 +12,7 @@ SRC			= main.c \
 			  utils.c \
 			  digest/run_digest.c \
 			  digest/parse_digest.c \
-			  digest/input.c \
+			  digest/read_file.c \
 			  digest/print.c \
 			  digest/md5.c \
 			  digest/sha256.c \
