@@ -54,7 +54,7 @@ int				parse_cipher_args(t_cipher_ctx *ctx, int argc, char **argv);
 
 /* base64.c */
 int				base64_command(const t_cipher *self, int argc, char **argv);
-size_t			base64_encode(const unsigned char *in, size_t len, char **out);
+void			base64_encode(uint8_t *dest, const uint8_t *data, size_t len);
 int				base64_decode(const char *in, size_t len,
 					unsigned char **out, size_t *outlen);
 
