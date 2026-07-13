@@ -33,6 +33,10 @@ const t_command	*find_command(const char *cmd);
 void			print_usage(void);
 void			print_invalid_command(const char *cmd);
 
+/* read_file.c -- shared input helpers (read whole fd/file into a buffer) */
+int				read_fd(int fd, unsigned char **out, size_t *outlen);
+int				read_file(const char *path, unsigned char **out, size_t *outlen);
+
 /* utils.c -- shared libft-style helpers */
 size_t			ft_strlen(const char *s);
 int				ft_strcmp(const char *a, const char *b);

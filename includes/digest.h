@@ -63,9 +63,7 @@ void			parse_args(t_digest_ctx *ctx, int argc, char **argv);
 t_input			*append_input(t_digest_ctx *ctx, t_src type, char *label);
 void			free_inputs(t_digest_ctx *ctx);
 
-/* read_file.c */
-int				read_fd(int fd, unsigned char **out, size_t *outlen);
-int				read_file(const char *path, unsigned char **out, size_t *outlen);
+/* read_fd / read_file live in ft_ssl.h (shared by digest and cipher). */
 
 /* print.c */
 void			print_result(t_digest_ctx *ctx, t_input *in, const unsigned char *dg);
