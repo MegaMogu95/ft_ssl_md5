@@ -18,6 +18,12 @@ SRC			= main.c \
 			  digest/sha256.c \
 			  cipher/run_cipher.c \
 			  cipher/base64.c \
+			  cipher/parse_cipher.c \
+			  cipher/hex.c \
+			  cipher/padding.c \
+			  cipher/pbkdf.c \
+			  cipher/des_core.c \
+			  cipher/des_run.c \
 			  cipher/des_ecb.c \
 			  cipher/des_cbc.c
 

@@ -124,7 +124,7 @@ int	base64_decode(const char *in, size_t len, unsigned char **out, size_t *outle
 
 /* -------------------------------------------------------------------- i/o */
 
-static int	write_all(int fd, const void *buf, size_t len)
+int	write_all(int fd, const void *buf, size_t len)
 {
 	size_t	off;
 	ssize_t	n;
@@ -156,6 +156,26 @@ static int	write_wrapped(int fd, const unsigned char *buf, size_t len)
 		off += chunk;
 	}
 	return (0);
+}
+
+/*
+** Encode `data` and write it to `fd`, wrapped at B64_WRAP columns. Shared with
+** the DES commands for their -a (base64 armour) option.
+*/
+int	base64_encode_fd(int fd, const unsigned char *data, size_t len)
+{
+	unsigned char	*enc;
+	size_t			elen;
+	int				ret;
+
+	elen = (len + 2) / 3 * 4;
+	enc = malloc(elen ? elen : 1);
+	if (!enc)
+		return (1);
+	base64_encode(enc, data, len);
+	ret = write_wrapped(fd, enc, elen);
+	free(enc);
+	return (ret);
 }
 
 static void	b64_error(const char *name)
@@ -212,26 +232,16 @@ static int	parse_b64_args(int argc, char **argv, t_b64_opts *o)
 static int	run_base64(t_b64_opts *o, int outfd,
 			const unsigned char *data, size_t len)
 {
-	unsigned char	*conv;
-	size_t			clen;
+	unsigned char	*dec;
+	size_t			dlen;
 	int				ret;
 
-	if (o->decode)
-	{
-		if (base64_decode((const char *)data, len, &conv, &clen))
-			return (ft_putstr_fd("ft_ssl: base64: invalid input\n", 2), 1);
-		ret = write_all(outfd, conv, clen);
-	}
-	else
-	{
-		clen = (len + 2) / 3 * 4;
-		conv = malloc(clen ? clen : 1);
-		if (!conv)
-			return (1);
-		base64_encode(conv, data, len);
-		ret = write_wrapped(outfd, conv, clen);
-	}
-	free(conv);
+	if (!o->decode)
+		return (base64_encode_fd(outfd, data, len));
+	if (base64_decode((const char *)data, len, &dec, &dlen))
+		return (ft_putstr_fd("ft_ssl: base64: invalid input\n", 2), 1);
+	ret = write_all(outfd, dec, dlen);
+	free(dec);
 	return (ret);
 }
 

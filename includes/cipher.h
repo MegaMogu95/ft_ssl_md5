@@ -6,6 +6,9 @@
 # define DES_BLOCK_SIZE 8
 # define DES_KEY_SIZE 8
 
+# define DES_MODE_ECB 0
+# define DES_MODE_CBC 1
+
 /*
 ** Cipher command line flags.
 **   -a : base64 the input/output around the cipher
@@ -57,6 +60,8 @@ int				base64_command(const t_cipher *self, int argc, char **argv);
 void			base64_encode(uint8_t *dest, const uint8_t *data, size_t len);
 int				base64_decode(const char *in, size_t len,
 					unsigned char **out, size_t *outlen);
+int				base64_encode_fd(int fd, const unsigned char *data, size_t len);
+int				write_all(int fd, const void *buf, size_t len);
 
 /* hex.c */
 int				hex_to_bytes(const char *hex, unsigned char *out, size_t max);
@@ -76,6 +81,9 @@ void			des_block_crypt(const unsigned char in[8],
 /* des_ecb.c / des_cbc.c */
 int				des_ecb_command(const t_cipher *self, int argc, char **argv);
 int				des_cbc_command(const t_cipher *self, int argc, char **argv);
+
+/* des_run.c -- shared driver for the DES commands */
+int				des_run(t_cipher_ctx *ctx, int mode, const char *cmd);
 
 extern const t_cipher	g_ciphers[];
 
